@@ -1,0 +1,8 @@
+Put the songs in this folder:
+  song.mp3   - the whole website (starts when she taps Enter)
+  song2.mp3  - moment 2 video
+  song3.mp3  - moment 3 video
+  song4.mp3  - moment 4 video
+  song5.mp3  - moment 5 video
+  song6.mp3  - moment 6 video
+Names must match exactly (lowercase, .mp3).

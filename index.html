@@ -2,265 +2,288 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>named</title>
-    <link rel = "stylesheet" href = "style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#1a0b16">
+    <title>Our Story ❤️</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Great+Vibes&family=Jost:wght@300;400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
-<body>
-    <main id="welcomeScreen">
-        <h1>Something special awaits...</h1>
-        <p>A little journey made just for you.</p>
-        <button id ="enterButton">Enter ❤️</button>
-    </main>
+<body class="locked">
 
-    <section id="nextScreen">
-        <h1>Welcome ❤️</h1>
-        <p id="message">Your journey starts here.</p>
+    <!-- Soft hearts drifting in the background (made by script.js) -->
+    <div id="hearts" aria-hidden="true"></div>
 
-        <input 
-            type = "text"
-            id="passwordInput"
-            placeholder="Enter the date ..."
-            >
-        <button id="unlockButton">Unclock ❤️</button>
-    </section>
+    <!-- Photos floating behind the story (made by script.js from every photo
+         that is NOT already used in a moment below) -->
+    <div id="floatingPhotos" aria-hidden="true"></div>
 
-    <section id="mainExperience">
-        <h1>Our Story</h1>
-        <p class="date">13 October</p>
-        <p class="hero-text">
-            A little collectiion of moments that became memories
-        </p>
 
-        <div class="scroll-indicator">
-            ↓
+    <!-- =====================================================
+         THE GATE: welcome, then the anniversary date
+         ===================================================== -->
+    <div id="gate">
+        <div class="gate-card" id="welcomeStep">
+            <p class="eyebrow">For you</p>
+            <h1>Something special<br>awaits you&hellip;</h1>
+            <p class="soft">A little journey, made just for you.</p>
+            <button class="btn" id="enterButton">Enter ❤️</button>
         </div>
 
-        <section class="story-section">
-            <p class="section-label">01</p>
+        <div class="gate-card hidden" id="dateStep">
+            <p class="eyebrow">One small question</p>
+            <h1>When did it all begin?</h1>
+            <p class="soft" id="message">Enter the date of our anniversary.</p>
+            <form id="dateForm" autocomplete="off">
+                <input type="text" id="dateInput" inputmode="numeric"
+                       placeholder="DD / MM / YYYY" aria-label="Our anniversary date">
+                <button class="btn" type="submit">Unlock ❤️</button>
+            </form>
+        </div>
+    </div>
 
-            <h2>It started with a moment.</h2>
 
-            <p>
-                Some moments seem small when they happen,
-                but somehow they become the ones we remember.
-            </p>
+    <!-- =====================================================
+         THE STORY
+         ===================================================== -->
+    <main id="story" aria-hidden="true">
+
+        <header class="hero">
+            <p class="eyebrow">Happy Anniversary</p>
+            <h1 class="hero-title">Our Story</h1>
+            <p class="hero-date">14 October &middot; Every Year</p>
+            <div class="hero-line"></div>
+            <p class="hero-text">A little collection of moments that became memories.</p>
+            <p class="counter"><span id="daysTogether">0</span> days of us, and counting</p>
+            <div class="scroll-cue">scroll<span>&darr;</span></div>
+        </header>
+
+        <section class="intro reveal">
+            <p>Some moments seem small when they happen,
+               but somehow they become the ones we remember forever.
+               These are some of mine, with you.</p>
         </section>
 
-        <section class="memory-section">
-
-            <p class="section-label">02</p>
-
-            <h2>A moment worth keeping.</h2>
-
-            <div class="memory-frame">
-
-                <img
-                    src="images/memory1.jpg"
-                    alt="A special moment"
-                    class="memory-image"
-                >
-
+        <!-- ================= MOMENT 1 =================
+             Swap the photo/video numbers and edit the words below. -->
+        <section class="moment moment-left reveal" id="moment-1">
+            <div class="moment-head">
+                <p class="moment-number">Moment 01</p>
+                <h2 class="moment-title">It started with a moment.</h2>
+                <p class="moment-date">24 May 2025</p>
             </div>
 
-            <p class="memory-date">
-                13 October
-            </p>
+            <div class="moment-collage">
+                <figure class="photo photo-main">
+                    <img src="images/moment37.jpg" alt="Moment 1" loading="lazy">
+                </figure>
+                <figure class="photo photo-polaroid tilt-a">
+                    <img src="images/moment2.jpg" alt="Moment 1" loading="lazy">
+                </figure>
+                <figure class="photo photo-polaroid tilt-b">
+                    <img src="images/moment3.jpg" alt="Moment 1" loading="lazy">
+                </figure>
+            </div>
 
-            <p class="memory-caption">
-                Some memories don't need much explanation.
-            </p>
+            <p class="moment-caption">The first time everything felt different.</p>
 
+            <div class="moment-video">
+                <video controls playsinline preload="metadata">
+                    <source src="videos/moment1.mp4#t=0.1" type="video/mp4">
+                </video>
+            </div>
         </section>
 
-        <section class="gallery-section">
-
-            <p class="section-label">03</p>
-
-            <h2>Little moments.</h2>
-
-            <div class="editorial-gallery">
-
-                <div class="gallery-item gallery-item-large">
-
-                    <div class="gallery-image-wrap">
-                        <img
-                            src="images/memory5.jpg"
-                            alt="A special moment"
-                        >
-                    </div>
-
-                    <p class="gallery-caption">
-                        A memory worth keeping.
-                    </p>
-
-                </div>
-
-
-                <div class="gallery-item gallery-item-small">
-
-                    <div class="gallery-image-wrap">
-                        <img
-                            src="images/memory2.jpg"
-                            alt="A special moment"
-                        >
-                    </div>
-
-                    <p class="gallery-caption">
-                        One of those moments.
-                    </p>
-
-                </div>
-
-
-                <div class="gallery-item gallery-item-medium">
-
-                    <div class="gallery-image-wrap">
-                        <img
-                            src="images/memory3.jpg"
-                            alt="A special moment"
-                        >
-                    </div>
-
-                    <p class="gallery-caption">
-                        Something to remember.
-                    </p>
-
-                </div>
-
-
-                <div class="gallery-item gallery-item-small second-small">
-
-                    <div class="gallery-image-wrap">
-                        <img
-                            src="images/memory4.jpg"
-                            alt="A special moment"
-                        >
-                    </div>
-
-                    <p class="gallery-caption">
-                        Another little moment.
-                    </p>
-
-                </div>
-
+        <!-- ================= MOMENT 2 =================
+             Swap the photo/video numbers and edit the words below. -->
+        <section class="moment moment-right reveal" id="moment-2">
+            <div class="moment-head">
+                <p class="moment-number">Moment 02</p>
+                <h2 class="moment-title">Few days before your birthday</h2>
+                <p class="moment-date">26 JUNE 2026</p>
             </div>
 
+            <div class="moment-collage">
+                <figure class="photo photo-main">
+                    <img src="images/moment4.jpg" alt="Moment 2" loading="lazy">
+                </figure>
+                <figure class="photo photo-polaroid tilt-a">
+                    <img src="images/moment5.jpg" alt="Moment 2" loading="lazy">
+                </figure>
+                <figure class="photo photo-polaroid tilt-b">
+                    <img src="images/moment6.jpg" alt="Moment 2" loading="lazy">
+                </figure>
+            </div>
+
+            <p class="moment-caption">Still honoured to celebrate your birthday before everyone got the chance.</p>
+
+            <div class="moment-video">
+                <!-- 🎵 This video has no sound of its own: music/song2.mp3 plays while it plays -->
+                <video controls muted playsinline preload="metadata" data-song="music/song2.mp3">
+                    <source src="videos/moment2.mp4#t=0.1" type="video/mp4">
+                </video>
+            </div>
         </section>
 
-        <section class="video-section">
-
-            <p class="section-label">04</p>
-
-            <h2>Moving moments.</h2>
-
-            <div class="video-intro">
-                <p>
-                    Some memories are better experienced
-                    than explained.
-                </p>
+        <!-- ================= MOMENT 3 =================
+             Swap the photo/video numbers and edit the words below. -->
+        <section class="moment moment-left reveal" id="moment-3">
+            <div class="moment-head">
+                <p class="moment-number">Moment 03</p>
+                <h2 class="moment-title">Our little adventures.</h2>
+                <p class="moment-date">01 December 2025</p>
             </div>
 
-            <div class="cinematic-video">
-
-                <div class="video-frame">
-
-                    <video
-                        controls
-                        playsinline
-                        preload="metadata"
-                    >
-
-                        <source
-                            src="videos/moment1.mp4"
-                            type="video/mp4"
-                        >
-
-                        Your browser does not support video playback.
-
-                    </video>
-
-                </div>
-
-                <div class="video-details">
-
-                    <span>13 October</span>
-
-                    <span class="video-divider"></span>
-
-                    <span>A moment in motion</span>
-
-                </div>
-
+            <div class="moment-collage">
+                <figure class="photo photo-main">
+                    <img src="images/moment7.jpg" alt="Moment 3" loading="lazy">
+                </figure>
+                <figure class="photo photo-polaroid tilt-a">
+                    <img src="images/moment8.jpg" alt="Moment 3" loading="lazy">
+                </figure>
+                <figure class="photo photo-polaroid tilt-b">
+                    <img src="images/moment9.jpg" alt="Moment 3" loading="lazy">
+                </figure>
             </div>
 
+            <p class="moment-caption">Anywhere is my favourite place, as long as you are there.</p>
+
+            <div class="moment-video">
+                <!-- 🎵 This video has no sound of its own: music/song3.mp3 plays while it plays -->
+                <video controls muted playsinline preload="metadata" data-song="music/song3.mp3">
+                    <source src="videos/moment4.mp4#t=0.1" type="video/mp4">
+                </video>
+            </div>
         </section>
 
-        <section class="letter-section">
+        <!-- ================= MOMENT 4 =================
+             Swap the photo/video numbers and edit the words below. -->
+        <section class="moment moment-right reveal" id="moment-4">
+            <div class="moment-head">
+                <p class="moment-number">Moment 04</p>
+                <h2 class="moment-title">More little adventures</h2>
+                <p class="moment-date">15 February 2026</p>
+            </div>
 
-            <p class="section-label">05</p>
+            <div class="moment-collage">
+                <figure class="photo photo-main">
+                    <img src="images/moment10.jpg" alt="Moment 4" loading="lazy">
+                </figure>
+                <figure class="photo photo-polaroid tilt-a">
+                    <img src="images/moment11.jpg" alt="Moment 4" loading="lazy">
+                </figure>
+                <figure class="photo photo-polaroid tilt-b">
+                    <img src="images/moment12.jpg" alt="Moment 4" loading="lazy">
+                </figure>
+            </div>
 
-            <h2>A few words.</h2>
+            <p class="moment-caption">You make even the ordinary days feel like a celebration.</p>
+
+            <div class="moment-video">
+                <!-- 🎵 This video has no sound of its own: music/song4.mp3 plays while it plays -->
+                <video controls muted playsinline preload="metadata" data-song="music/song4.mp3">
+                    <source src="videos/moment3.mp4#t=0.1" type="video/mp4">
+                </video>
+            </div>
+        </section>
+
+        <!-- ================= MOMENT 5 =================
+             Swap the photo/video numbers and edit the words below. -->
+        <section class="moment moment-left reveal" id="moment-5">
+            <div class="moment-head">
+                <p class="moment-number">Moment 05</p>
+                <h2 class="moment-title">Through everything.</h2>
+                <p class="moment-date">02 October 2026</p>
+            </div>
+
+            <div class="moment-collage">
+                <figure class="photo photo-main">
+                    <img src="images/moment13.jpg" alt="Moment 5" loading="lazy">
+                </figure>
+                <figure class="photo photo-polaroid tilt-a">
+                    <img src="images/moment30.jpg" alt="Moment 5" loading="lazy">
+                </figure>
+                <figure class="photo photo-polaroid tilt-b">
+                    <img src="images/moment25.jpg" alt="Moment 5" loading="lazy">
+                </figure>
+            </div>
+
+            <p class="moment-caption">The good days, the hard days, and all of the days in between,  with my cute face.</p>
+
+            <div class="moment-video">
+                <!-- 🎵 This video has no sound of its own: music/song5.mp3 plays while it plays -->
+                <video controls muted playsinline preload="metadata" data-song="music/song5.mp3">
+                    <source src="videos/moment5.mp4#t=0.1" type="video/mp4">
+                </video>
+            </div>
+        </section>
+
+        <!-- ================= MOMENT 6 =================
+             Swap the photo/video numbers and edit the words below. -->
+        <section class="moment moment-right reveal" id="moment-6">
+            <div class="moment-head">
+                <p class="moment-number">Moment 06</p>
+                <h2 class="moment-title">Rebranding , the project YOU!</h2>
+                <p class="moment-date">09 April 2026</p>
+            </div>
+
+            <div class="moment-collage">
+                <figure class="photo photo-main">
+                    <img src="images/moment38.jpg" alt="Moment 6" loading="lazy">
+                </figure>
+                <figure class="photo photo-polaroid tilt-a">
+                    <img src="images/moment40.jpg" alt="Moment 6" loading="lazy">
+                </figure>
+                <figure class="photo photo-polaroid tilt-b">
+                    <img src="images/moment43.jpg" alt="Moment 6" loading="lazy">
+                </figure>
+            </div>
+
+            <p class="moment-caption">A whole year later, and I would choose you all over again.</p>
+
+            <div class="moment-video">
+                <!-- 🎵 This video has no sound of its own: music/song6.mp3 plays while it plays -->
+                <video controls muted playsinline preload="metadata" data-song="music/song6.mp3">
+                    <source src="videos/moment6.mp4#t=0.1" type="video/mp4">
+                </video>
+            </div>
+        </section>
+
+
+        <!-- ================= THE LETTER =================
+             ✍️  PASTE YOUR LONG PARAGRAPH HERE.
+             Use one <p> ... </p> for each paragraph. -->
+        <section class="letter-section reveal">
+            <div class="final-heart">♡</div>
+            <p class="moment-number">And finally&hellip;</p>
+            <h2 class="letter-title">To my love,</h2>
 
             <div class="letter">
+                <p>[ Write your words here. ]</p>
 
-                <p>
-                    There are some things that are easier
-                    to write than to say.
-                </p>
+                <p>[ Add another paragraph here. ]</p>
 
-                <p>
-                    So I wanted to leave a little something
-                    here for you.
-                </p>
+                <p>[ And your final thoughts here. ]</p>
 
-                <p>
-                    Something you can come back to
-                    whenever you need it.
-                </p>
-
-                <div class="letter-line"></div>
-
-                <p class="letter-ending">
-                    Some things are worth putting into words.
-                </p>
-
+                <p class="letter-signature">Forever yours,<br><span>&mdash; Your name</span></p>
             </div>
-
         </section>
 
-        <section class="final-section">
+        <footer class="ending reveal">
+            <p class="ending-script" id="anniversaryLine">Happy Anniversary</p>
+            <p class="soft">Here&rsquo;s to every year after this one.</p>
+            <button class="btn btn-ghost" id="backToTop">Back to the beginning &uarr;</button>
+        </footer>
+    </main>
 
-            <p class="section-label">06</p>
+    <!-- ================= BACKGROUND SONG =================
+         🎵 The song of the whole website is music/song.mp3
+         (set in script.js, MAIN_SONG). Video songs are set on each video above. -->
+    <button id="musicToggle" class="hidden" aria-label="Pause the music">♫</button>
 
-            <div class="final-heart">
-                ♡
-            </div>
-
-            <h2>And finally...</h2>
-
-            <div class="final-letter">
-
-                <p>
-                    Write your words here.
-                </p>
-
-                <p>
-                    Add another paragraph here.
-                </p>
-
-                <p>
-                    And your final thoughts here.
-                </p>
-
-                <p class="final-signature">
-                    — Me
-                </p>
-
-            </div>
-
-        </section>
-    </section>
+    <!-- Tap a photo to see it bigger -->
+    <div id="lightbox" aria-hidden="true"><img alt=""></div>
 
     <script src="script.js"></script>
 </body>
