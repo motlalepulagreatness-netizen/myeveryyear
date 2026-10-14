@@ -9,6 +9,83 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Great+Vibes&family=Jost:wght@300;400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+
+    <!-- ===== LETTER SONG: styles for the "press play" card ===== -->
+    <style>
+        .letter-player {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.75rem;
+            max-width: 420px;
+            margin: 1.25rem auto 2.25rem;
+            padding: 1.4rem 1.2rem;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            opacity: 0;
+            transform: translateY(14px);
+            transition: opacity 0.9s ease, transform 0.9s ease;
+        }
+        .letter-player.show { opacity: 1; transform: none; }
+
+        .letter-player-hint {
+            margin: 0;
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-size: 1.15rem;
+            opacity: 0.9;
+        }
+
+        .letter-play-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.55rem;
+        }
+        .letter-play-btn .lp-icon {
+            display: inline-block;
+            width: 1.1em;
+            text-align: center;
+        }
+
+        /* gentle pulse to invite the tap, until the song has been started */
+        .letter-player.show:not(.started) .letter-play-btn {
+            animation: letterPulse 2.2s ease-in-out infinite;
+        }
+        @keyframes letterPulse {
+            0%, 100% { transform: scale(1); }
+            50%      { transform: scale(1.06); }
+        }
+
+        /* little equaliser bars while the song plays */
+        .letter-eq {
+            display: none;
+            align-items: flex-end;
+            gap: 3px;
+            height: 14px;
+        }
+        .letter-player.playing .letter-eq { display: inline-flex; }
+        .letter-eq span {
+            width: 3px;
+            height: 100%;
+            background: currentColor;
+            border-radius: 2px;
+            animation: letterEq 0.9s ease-in-out infinite;
+        }
+        .letter-eq span:nth-child(2) { animation-delay: 0.2s; }
+        .letter-eq span:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes letterEq {
+            0%, 100% { transform: scaleY(0.3); }
+            50%      { transform: scaleY(1); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .letter-player, .letter-play-btn, .letter-eq span { animation: none !important; transition: none !important; }
+        }
+    </style>
 </head>
 <body class="locked">
 
@@ -249,6 +326,16 @@
             <p class="moment-number">And finally&hellip;</p>
             <h2 class="letter-title">To my love,</h2>
 
+            <!-- 🎵 LETTER SONG: pressing play stops whatever is playing and plays music/song7.mp3 -->
+            <div class="letter-player" id="letterPlayer">
+                <p class="letter-player-hint" id="letterHint">Before you read&hellip; press play for your song 🤍</p>
+                <button class="btn letter-play-btn" id="letterPlay" type="button" aria-label="Play the letter song">
+                    <span class="lp-icon" aria-hidden="true">▶</span>
+                    <span class="lp-text">Play your favourite one</span>
+                    <span class="letter-eq" aria-hidden="true"><span></span><span></span><span></span></span>
+                </button>
+            </div>
+
             <div class="letter">
                 <p> HAPPY 1 YEAR ANNIVERSARY ❤️🤍🥰🤭🫂  
                     To my Queen, my MaRantso, my Ziphe, Semomotwane saka, kganya yaka 🤍❤️🥰🙈
@@ -308,6 +395,220 @@
 
     <!-- Tap a photo to see it bigger -->
     <div id="lightbox" aria-hidden="true"><img alt=""></div>
+
+    <!-- ================= LETTER SONG =================
+         🎵 Plays music/song7.mp3 when the "Play our song" button in the letter is pressed.
+         This must stay ABOVE script.js: it keeps track of every song script.js plays,
+         so it can stop them all, and stops the main song from coming back while the
+         letter song is on. -->
+    <script>
+    (function () {
+        var LETTER_SONG = 'music/song7.mp3';
+
+        var FADE_IN_MS    = 2500;  // how long song7 takes to fade in
+        var FADE_OUT_MS   = 2000;  // how long the song that was playing takes to fade out
+        var PAUSE_FADE_MS = 700;   // quick fade when pausing / resuming song7
+
+        var letterSong = new Audio(LETTER_SONG);
+        letterSong.preload = 'auto';
+
+        var letterMode = false;          // true while the letter song "owns" the music
+        var letterWanted = false;        // true while song7 is playing or fading in
+        var otherMedia = new Set();      // every other song/video that has ever played
+
+        // Watch every play() call so we know about songs created inside script.js
+        var nativePlay = HTMLMediaElement.prototype.play;
+        HTMLMediaElement.prototype.play = function () {
+            if (this !== letterSong) {
+                otherMedia.add(this);
+                // While the letter song is on, don't let the main song (or any
+                // other background audio) start again on its own.
+                if (letterMode && this.tagName !== 'VIDEO') {
+                    return Promise.resolve();
+                }
+                // If this was in the middle of fading out, stop the fade and put its volume back
+                cancelFade(this, true);
+            }
+            return nativePlay.apply(this, arguments);
+        };
+
+        // ---- Volume fading ----
+        // (setInterval instead of requestAnimationFrame so fades still finish
+        //  if the phone screen turns off or the tab goes to the background)
+        var fades = new Map();
+
+        function cancelFade(m, restoreVolume) {
+            var f = fades.get(m);
+            if (!f) return;
+            clearInterval(f.timer);
+            fades.delete(m);
+            if (restoreVolume && f.restore != null) m.volume = f.restore;
+        }
+
+        // iPhones/iPads don't allow websites to change volume, so there we
+        // switch songs straight away instead of fading (no overlap at full volume)
+        var canFade = (function () {
+            var test = document.createElement('audio');
+            test.volume = 0.5;
+            return test.volume === 0.5;
+        })();
+
+        function fadeTo(m, target, ms, done, restore) {
+            if (!canFade) {
+                cancelFade(m, false);
+                if (done) done();
+                return;
+            }
+            var prev = fades.get(m);
+            var restoreVol = restore != null ? restore : (prev ? prev.restore : null);
+            cancelFade(m, false);
+
+            var from = m.volume;
+            var start = Date.now();
+            var f = { timer: 0, restore: restoreVol };
+            fades.set(m, f);
+
+            f.timer = setInterval(function () {
+                var t = Math.min(1, (Date.now() - start) / ms);
+                var eased = t * t * (3 - 2 * t);           // smooth start and finish
+                try { m.volume = from + (target - from) * eased; } catch (err) {}
+                if (t >= 1) {
+                    clearInterval(f.timer);
+                    fades.delete(m);
+                    if (done) done();
+                }
+            }, 30);
+        }
+
+        // Fade out everything that is playing (except song7), then pause it and
+        // put its volume back to normal so it sounds right next time it plays.
+        function fadeOutEverythingElse() {
+            var all = new Set(otherMedia);
+            document.querySelectorAll('audio, video').forEach(function (m) { all.add(m); });
+
+            all.forEach(function (m) {
+                if (m === letterSong || m.paused) return;
+                var f = fades.get(m);
+                var original = (f && f.restore != null) ? f.restore : m.volume;
+                fadeTo(m, 0, FADE_OUT_MS, function () {
+                    m.pause();
+                    m.volume = original;
+                }, original);
+            });
+        }
+
+        var player = document.getElementById('letterPlayer');
+        var button = document.getElementById('letterPlay');
+        var hint   = document.getElementById('letterHint');
+        var icon   = button.querySelector('.lp-icon');
+        var text   = button.querySelector('.lp-text');
+
+        function setState(state) {
+            player.classList.toggle('playing', state === 'playing');
+            if (state !== 'idle') player.classList.add('started');
+
+            if (state === 'playing') {
+                icon.textContent = '❚❚';
+                text.textContent = 'Pause';
+                hint.textContent = 'Now playing our song ♫';
+                button.setAttribute('aria-label', 'Pause the letter song');
+            } else if (state === 'paused') {
+                icon.textContent = '▶';
+                text.textContent = 'Resume our song';
+                hint.textContent = 'Paused 🤍';
+                button.setAttribute('aria-label', 'Resume the letter song');
+            } else if (state === 'ended') {
+                icon.textContent = '↻';
+                text.textContent = 'Play again';
+                hint.textContent = 'Our song 🤍';
+                button.setAttribute('aria-label', 'Play the letter song again');
+            } else {
+                icon.textContent = '▶';
+                text.textContent = 'Play our song';
+                hint.innerHTML = 'Before you read&hellip; press play for our song 🤍';
+                button.setAttribute('aria-label', 'Play the letter song');
+            }
+        }
+
+        // Crossfade: the current song fades out while song7 fades in, at the same time
+        function startLetterSong() {
+            letterWanted = true;
+            letterMode = true;
+            fadeOutEverythingElse();
+            setState('playing');
+
+            // Start from silence (unless song7 was mid-fade-out, then just fade back up)
+            if (letterSong.paused) {
+                cancelFade(letterSong, false);
+                letterSong.volume = 0;
+            }
+            var fadeInTime = letterSong.currentTime > 0 && !letterSong.ended ? PAUSE_FADE_MS : FADE_IN_MS;
+
+            letterSong.play().then(function () {
+                fadeTo(letterSong, 1, fadeInTime);
+            }).catch(function () {
+                letterWanted = false;
+                letterMode = false;
+                setState('idle');
+            });
+        }
+
+        function pauseLetterSong(ms) {
+            letterWanted = false;
+            setState('paused');
+            fadeTo(letterSong, 0, ms || PAUSE_FADE_MS, function () {
+                letterSong.pause();
+            });
+        }
+
+        function toggleLetterSong() {
+            if (letterWanted) pauseLetterSong();
+            else startLetterSong();
+        }
+
+        button.addEventListener('click', toggleLetterSong);
+
+        // When the letter song finishes, hand the music back to the rest of the site
+        letterSong.addEventListener('ended', function () {
+            letterWanted = false;
+            letterMode = false;
+            setState('ended');
+        });
+
+        // If a moment video is played while the letter song is on, the video wins
+        // (song7 fades out while the video's song comes in)
+        document.addEventListener('play', function (e) {
+            if (letterMode && e.target.tagName === 'VIDEO') {
+                letterMode = false;
+                pauseLetterSong(FADE_OUT_MS);
+            }
+        }, true);
+
+        // While the letter song is on, the ♫ button controls the letter song
+        document.addEventListener('click', function (e) {
+            if (letterMode && e.target.closest && e.target.closest('#musicToggle')) {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                toggleLetterSong();
+            }
+        }, true);
+
+        // Fade the play card in when the letter comes into view
+        var letterSection = document.querySelector('.letter-section');
+        if ('IntersectionObserver' in window && letterSection) {
+            new IntersectionObserver(function (entries, obs) {
+                entries.forEach(function (entry) {
+                    if (entry.isIntersecting) {
+                        player.classList.add('show');
+                        obs.disconnect();
+                    }
+                });
+            }, { threshold: 0.15 }).observe(letterSection);
+        } else {
+            player.classList.add('show');
+        }
+    })();
+    </script>
 
     <script src="script.js"></script>
 </body>
