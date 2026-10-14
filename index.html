@@ -510,22 +510,22 @@
             if (state === 'playing') {
                 icon.textContent = '❚❚';
                 text.textContent = 'Pause';
-                hint.textContent = 'Now playing our song ♫';
+                hint.textContent = 'Now playing your favourate ♫';
                 button.setAttribute('aria-label', 'Pause the letter song');
             } else if (state === 'paused') {
                 icon.textContent = '▶';
-                text.textContent = 'Resume our song';
+                text.textContent = 'Resume your song';
                 hint.textContent = 'Paused 🤍';
                 button.setAttribute('aria-label', 'Resume the letter song');
             } else if (state === 'ended') {
                 icon.textContent = '↻';
                 text.textContent = 'Play again';
-                hint.textContent = 'Our song 🤍';
+                hint.textContent = 'Your song 🤍';
                 button.setAttribute('aria-label', 'Play the letter song again');
             } else {
                 icon.textContent = '▶';
-                text.textContent = 'Play our song';
-                hint.innerHTML = 'Before you read&hellip; press play for our song 🤍';
+                text.textContent = 'Play your song';
+                hint.innerHTML = 'Before you read&hellip; press play for your song 🤍';
                 button.setAttribute('aria-label', 'Play the letter song');
             }
         }
